@@ -57,16 +57,3 @@ class NB(object):
         """
         numerator = self.category_word_count[category][word] + 1.0
         return 1.0 * numerator / self.denominators[category]
-
-
-if __name__ == '__main__':
-    training_data = [('中国', {'Chinese': 2, 'Beijing': 1}),
-                     ('中国', {'Chinese': 2, 'Shanghai': 1}),
-                     ('中国', {'Chinese': 1, 'Macao': 1}),
-                     ('日本', {'Tokyo': 1, 'Japan': 1, 'Chinese': 1})]
-    nb = NB()
-    nb.train(training_data)
-    testing_data1 = {'Chinese': 3, 'Tokyo': 1, 'Japan': 1}
-    testing_data2 = {'Sapporo': 3, 'Tokyo': 1}
-    print testing_data1, nb.classify(testing_data1)
-    print testing_data2, nb.classify(testing_data2)

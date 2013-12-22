@@ -94,12 +94,12 @@ class TWCNB(object):
         for category, word_count in complement_category_word_count.iteritems():
             theta_denominator = sum(word_count.itervalues()) + alpha
             for word, count in word_count.iteritems():
-                theta = (count + 1) / theta_denominator  # 4 Complement
+                theta = (count + 1) / theta_denominator
                 category_word_weight[category][word] = math.log(theta)
         return category_word_weight
 
     def _calc_normalized_category_word_weight(self, category_word_weight):
-        """各カテゴリでの各単語の重みを正規化する
+        """各カテゴリでの各単語の重みを正規化する(Weight Normalization)
         """
         normalized_category_word_weight = defaultdict(lambda: defaultdict(int))
         for category, word_weight in category_word_weight.iteritems():
@@ -107,26 +107,3 @@ class TWCNB(object):
             for word, weight in word_weight.iteritems():
                 normalized_category_word_weight[category][word] = weight / weight_sum  # 2. Weight Normalization
         return normalized_category_word_weight
-
-
-if __name__ == '__main__':
-    data = [["yes", {"Chinese": 2, "Beijing": 1}],
-            ["yes", {"Chinese": 2, "Shanghai": 1}],
-            ["yes", {"Chinese": 1, "Macao": 1}],
-            ["no", {"Tokyo": 1, "Japan": 1, "Chinese": 1}]]
-    # ナイーブベイズ分類器を訓練
-    twcnb = TWCNB()
-    twcnb.train(data)
-    # テストデータのカテゴリを予測
-    test = {"Macao": 3, "Tokyo": 1, "Japan": 1}
-    print "log P(yes|test) =", twcnb._calc_score(test, "yes")
-    print "log P(no|test) =", twcnb._calc_score(test, "no")
-    print twcnb.classify(test), 'should be yes'
-    test = {"Chinese": 0, "Tokyo": 0, "Japan": 1}
-    print "log P(yes|test) =", twcnb._calc_score(test, "yes")
-    print "log P(no|test) =", twcnb._calc_score(test, "no")
-    print twcnb.classify(test), 'should be no'
-    test = {"Chinese": 1, "Tokyo": 0, "Japan": 1}
-    print "log P(yes|test) =", twcnb._calc_score(test, "yes")
-    print "log P(no|test) =", twcnb._calc_score(test, "no")
-    print twcnb.classify(test), 'should be no'

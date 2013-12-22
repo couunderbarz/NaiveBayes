@@ -18,7 +18,6 @@ class AODE(object):
         self.minimum_word_count = minimum_word_count
         self.all_categories = set()
         self.word_count = defaultdict(int)
-        self.denominators = defaultdict(lambda: defaultdict(float))
         self.category_word_count = defaultdict(lambda: defaultdict(int))
         self.category_word_pair_count = defaultdict(lambda: defaultdict(int))
 
@@ -33,7 +32,7 @@ class AODE(object):
                 self.category_word_pair_count[category][(word1, word2)] += 1
 
     def classify(self, document):
-        """
+        """documentが分類されるcategoryを返す
         """
         scores = {category: self._calc_score(document, category)
                   for category in self.all_categories}
@@ -41,7 +40,7 @@ class AODE(object):
         return best
 
     def _calc_score(self, document, category):
-        """
+        """documentがcategoryに属するスコアを算出する
         """
         score = 0.0
         for word in document.iterkeys():
@@ -52,15 +51,16 @@ class AODE(object):
         return score
 
     def _calc_one_dependence_score(self, document, category, attribute):
+        """attributeがペアレントの時に、documentがcategoryに属するスコアを算出する
+        P(category, attribute) * ΠP(word|category, attribute)
         """
-        """
-        score = (self.category_word_count[category][attribute] + 1.0) / len(self.word_count) + len(self.all_categories)  # P(category, word)
+        score = (self.category_word_count[category][attribute] + 1.0) / len(self.word_count) + len(self.all_categories)
         for word, count in document.iteritems():
             score *= count * self._calc_one_dependence_probability(word, category, attribute)
         return score
 
     def _calc_one_dependence_probability(self, word, category, attribute):
-        """
+        """P(word|category, attribute)
         """
         numerator = self.category_word_pair_count[category][(word, attribute)] + 1.0
         denominator = self.category_word_count[category][word] + len(self.word_count)
